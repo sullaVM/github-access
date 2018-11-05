@@ -2,15 +2,21 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
+func prettyPrint(i interface{}) string {
+	s, _ := json.MarshalIndent(i, "", "\t")
+	return string(s)
+}
+
 func main() {
 	ctx := context.Background()
-	key := "d64e35f68a6d998fcefbc7a73c45a58af3ed2e73"
+	key := "KEY"
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: key},
@@ -23,8 +29,9 @@ func main() {
 	if err != nil {
 		fmt.Errorf("%s", err)
 	}
-
-	for _, repo := range repos {
-		fmt.Printf("%s\n", repo.GetFullName())
+	user, _, err := client.Users.Get(ctx, "")
+	if err != nil {
+		fmt.Errorf("%s", err)
 	}
+	fmt.Printf("%v\n%s", prettyPrint(user), prettyPrint(repos))
 }
