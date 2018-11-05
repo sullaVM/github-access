@@ -10,7 +10,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	key := "d64e35f68a6d998fcefbc7a73c45a58af3ed2e73"
+	key := ""
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: key},
