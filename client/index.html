@@ -6,10 +6,12 @@
 
 </head>
 <body>
+  this is a test.
   <div></div>
   <script>
-    $.getJSON("https://api.github.com/users/sullaVM", function(result){
-      $("div").append(JSON.stringify(result));
+    $.get("localhost:8080", function(result){
+      console.log(result);
+      $("body").append(result);
     });
   </script>
 </body>

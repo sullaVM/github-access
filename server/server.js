@@ -2,6 +2,7 @@ require('dotenv').config()
 var express = require('express');
 var app = express();
 var github = require('octonode');
+var cors = require('cors');
 
 var client = github.client(process.env.ACCESS_TOKEN);
 
@@ -15,6 +16,8 @@ function getUser() {
   });
 };
 
+app.use(cors())
+
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   var data = getUser()
@@ -22,9 +25,6 @@ app.get('/', function (req, res) {
     .catch(error => console.log(error));
 })
 
-var server = app.listen(8080, function () {
-  var host = server.address().address
-  var port = server.address().port
-  
-  console.log("Github app listening at http://%s:%s", host, port)
+app.listen(8080, function () {
+  console.log('CORS-enabled web server listening on port 80')
 })
