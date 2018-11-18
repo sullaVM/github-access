@@ -9,9 +9,11 @@
   this is a test.
   <div></div>
   <script>
-    $.get("localhost:8080", function(result){
+    $.get("/user", function(result){
       console.log(result);
-      $("body").append(result);
+      // $.each(result, function(i, item){
+      //   $("div").append(JSON.stringify(item.login));
+      // });
     });
   </script>
 </body>
