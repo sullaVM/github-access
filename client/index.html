@@ -3,38 +3,19 @@
 <head>
   <meta charset="utf-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3.v3.js"></script>
 
-
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/style.css" media="screen" />
 </head>
 
 <body>
-  this is a test.
-  <svg width="720" height="120">
-  </svg>
+  <h1>
+    YOU VS FOLLOWERS
+  </h1>
+  <div id="graph">
+  </div>
 
-
-  <script>
-    $.get("/user", function (result) {
-      console.log(result);
-      // $.each(result, function(i, item){
-      //   $("div").append(JSON.stringify(item.login));
-      // });
-    });
-    var svg = d3.select("svg");
-
-    var circle = svg.selectAll("circle");
-    circle.data([32, 57, 112, 293])
-      .enter().append("circle")
-      .attr("cy", 60)
-      .attr("cx", function (d, i) { return i * 100 + 30; })
-      .attr("r", function (d) { return Math.sqrt(d); });
-
-    circle = svg.selectAll("circle")
-      .data([32, 57]);
-    circle.exit().remove();
-
-  </script>
+  <script src="/visuals.js"></script>
 </body>
-
 </html>
