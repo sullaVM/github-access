@@ -1,20 +1,40 @@
 <!DOCTYPE html>
+
 <head>
   <meta charset="utf-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
 
 
 </head>
+
 <body>
   this is a test.
-  <div></div>
+  <svg width="720" height="120">
+  </svg>
+
+
   <script>
-    $.get("/user", function(result){
+    $.get("/user", function (result) {
       console.log(result);
       // $.each(result, function(i, item){
       //   $("div").append(JSON.stringify(item.login));
       // });
     });
+    var svg = d3.select("svg");
+
+    var circle = svg.selectAll("circle");
+    circle.data([32, 57, 112, 293])
+      .enter().append("circle")
+      .attr("cy", 60)
+      .attr("cx", function (d, i) { return i * 100 + 30; })
+      .attr("r", function (d) { return Math.sqrt(d); });
+
+    circle = svg.selectAll("circle")
+      .data([32, 57]);
+    circle.exit().remove();
+
   </script>
 </body>
+
 </html>

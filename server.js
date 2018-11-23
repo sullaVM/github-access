@@ -5,10 +5,12 @@ var github = require('octonode');
 
 var client = github.client(process.env.ACCESS_TOKEN);
 
+app.use(express.static("client"));
+
 function getUser() {
   return new Promise((resolve, reject) => {
     client.get('/users/sullavm/followers', {}, function (err, status, body, headers) {
-      if (err) reject(error);
+      if (err) reject(err);
       else resolve(body)
     });
   });
@@ -23,8 +25,6 @@ function getUserRepos(url) {
   }
   )
 }
-
-app.use(express.static("client"));
 
 async function getUsersPoints(users) {
   var promises = [];
