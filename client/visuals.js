@@ -25,6 +25,8 @@ function getUserData(username) {
 };
 
 function getUserCommitsPerRepo(username) {
+  $("#loader").fadeIn("slow");
+
   var url = "/user/" + username + "/commits/all/"
   $.get(url, function (result) {
     var repos = [];
@@ -40,9 +42,12 @@ function getUserCommitsPerRepo(username) {
         "name": result[i].repo.name,
         "url": result[i].repo.url,
         "language": result[i].language,
-        "r": totalComs
+        "value": totalComs
       }
     }
+
+    $("#loader").fadeOut("fast");
+
     visualiseRepos(username, repos);
   });
 }
@@ -99,30 +104,31 @@ function visualiseFollowers(gitusers) {
     .attr("class", "node")
 
     .on("mouseout", function (d, i) {
-        d3.select(this).selectAll("circle")
-          .transition()
-          .duration(250)
-          .attr("r", d.r)
-          .attr("fill", palette.followers);
+      d3.select(this).selectAll("circle")
+        .transition()
+        .duration(250)
+        .attr("r", d.r)
+        .attr("fill", palette.followers);
 
-        d3.select(this).select("text")
-          .transition()
-          .duration(250)
+      d3.select(this).select("text")
+        .transition()
+        .duration(250)
     })
 
     .on("mouseover", function (d, i) {
-        d3.select(this).selectAll("circle")
-          .transition()
-          .duration(250)
-          .style("cursor", "none")
-          .attr("r", d.r + 3)
-          .attr("fill", palette.orange);
+      d3.select(this).selectAll("circle")
+        .transition()
+        .duration(250)
+        .style("cursor", "none")
+        .attr("r", d.r + 3)
+        .attr("fill", palette.orange)
+        .style("cursor", "pointer");
 
-        d3.select(this).select("text")
-          .transition()
-          .style("cursor", "none")
-          .duration(250)
-          .style("cursor", "none")
+      d3.select(this).select("text")
+        .transition()
+        .style("cursor", "none")
+        .duration(250)
+        .style("cursor", "none")
     })
 
 
@@ -173,52 +179,85 @@ function visualiseFollowers(gitusers) {
 };
 
 function visualiseRepos(owner, repos) {
+
+  var body = d3.select("body");
+
+  var bigraph = body.append("div")
+    .attr("id", "bargraph");
+
+  var header = bigraph.append("div")
+    .attr("class", "header");
+
+  header.append("text")
+    .text("Commits per repository in the past year");
+
+
   console.log(repos);
+  var data = repos;
 
-  var nodes = repos;
-  // Set canvas.
-  var canvas = d3.select("#stats")
-    .append("svg:svg")
+  var margin = {
+    top: 0,
+    right: w * 0.10,
+    bottom: 0,
+    left: w * 0.30
+  };
+
+  var width = (w * 0.80) - margin.left - margin.right,
+    height = (h * 0.75);
+
+  var svg = d3.select("#bargraph").append("svg")
     .attr("class", "stage")
-    .attr("width", w)
-    .attr("height", h);
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Set force.
-  var force = d3.layout.force()
-    .nodes(nodes)
-    .gravity(0.1)
-    .charge(function (d) {
-      return -100 - (d.r);
+  var x = d3.scale.linear()
+    .range([0, width])
+    .domain([0, d3.max(data, function (d) {
+      return d.value;
+    })]);
+
+  var y = d3.scale.ordinal()
+    .rangeRoundBands([height, 0], .1)
+    .domain(data.map(function (d) {
+      return d.name;
+    }));
+
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .tickSize(0)
+    .orient("left");
+
+  var gy = svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+
+  var bars = svg.selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("g")
+
+  bars.append("rect")
+    .attr("class", "bar")
+    .attr("y", function (d) {
+      return y(d.name);
     })
-    .size([w, h]);
-
-  // Create nodes.
-  var node = canvas.selectAll("circle.node")
-    .data(nodes)
-    .enter().append("g")
-    .attr("class", "node")
-    .call(force.drag);
-
-  node.append("svg:circle")
-    .attr("cx", function (d) { return d.x; })
-    .attr("cy", function (d) { return d.y; })
-    .attr("r", function (d) { return d.r; })
-    .attr("fill", palette.followers)
-
-  force.on("tick", function (e) {
-    node.attr("transform", function (d, i) {
-      return "translate(" + d.x + "," + d.y + ")";
+    .attr("height", y.rangeBand())
+    .attr("x", 0)
+    .attr("width", function (d) {
+      return x(d.value);
     });
-  });
 
-  node.append("text")
-    .text(function (d) { return d.name + " = " + d.r; })
-    .attr("x", function (d) { return d.r + 5; })
-    .attr("y", function (d) { { return d.r / 2; } })
-    .attr("fill", palette.text)
-    .attr("font-size", "14px")
-    .attr("text-anchor", "beginning")
-
-  force.start();
-
+  bars.append("text")
+    .attr("class", "label")
+    .attr("y", function (d) {
+      return y(d.name) + y.rangeBand() / 2 + 4;
+    })
+    .attr("x", function (d) {
+      return x(d.value) + 5;
+    })
+    .text(function (d) {
+      return d.value + " commits";
+    });
 };
