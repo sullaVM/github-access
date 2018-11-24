@@ -1,11 +1,13 @@
-
-  $( ".feature" ).on( "click", function( event ) {
-    var username = "/user/sullavm"
-    getUserData(username);
-  });
+$('input[type=text]').on('keydown', function(e) {
+  if (e.which == 13) {
+      e.preventDefault();
+      $('input[type=text]').fadeOut("slow");
+      getUserData($("input").val());
+  }
+});
 
 function getUserData(username) {
-  $.get(username, function (result) {
+  $.get("/user/" + username, function (result) {
     console.log(result);
     var user = [];
     for (var i = 0; i < result.length; i++) {

@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Cutive+Mono|Open+Sans:400,700');
-
-
 :root {
   --cambridge: #9BC1BC;
   --platinum: #E6EBE0;
   --teracotta: #ED6A5A;
+  --solidpink: #823A32;
 }
 
 body {
@@ -12,11 +11,37 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+#username {
+  height: 100px;
+  max-width: 30%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+#username input {
+  border: 0;
+  border-bottom: 2px solid var(--cambridge);
+  width: 100%;
+  font-size: 30px;
+  line-height: 15px;
+  height: 20px;
+  text-align: center;
+  padding: 10px;
+  background: transparent;
+  color: var(--solidpink);
+ }
+
 #sidebar {
-  position:absolute;
+  position: absolute;
+  width: 250px;
   margin-left: 12px;
   margin-top: 12px;
 }
+
 .title {
   margin: 1%;
   font-family: 'Cutive Mono', monospace;
@@ -33,5 +58,4 @@ body {
   font-size: 12px;
   position: relative;
   padding: 10px;
-  background-color: var(--cambridge);
 }
