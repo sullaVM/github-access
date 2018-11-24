@@ -1,6 +1,35 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+
+:root {
+  --cambridge: #9BC1BC;
+  --platinum: #E6EBE0;
+  --teracotta: #ED6A5A;
+}
 
 body {
   background-color: #E6EBE0;
   font-family: 'Open Sans', sans-serif;
+}
+
+#sidebar {
+  position:absolute;
+  margin-left: 12px;
+  margin-top: 12px;
+}
+.title {
+  margin: 1%;
+  font-weight: 700;
+  font-size: 20px;
+  position: relative;
+  background-color: var(--teracotta);
+  color: white;
+  padding: 10px;
+}
+
+.feature {
+  margin: 1%;
+  font-size: 12px;
+  position: relative;
+  padding: 10px;
+  background-color: var(--cambridge);
 }
