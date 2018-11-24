@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+@import url('https://fonts.googleapis.com/css?family=Cutive+Mono|Open+Sans:400,700');
+
 
 :root {
   --cambridge: #9BC1BC;
@@ -18,6 +19,7 @@ body {
 }
 .title {
   margin: 1%;
+  font-family: 'Cutive Mono', monospace;
   font-weight: 700;
   font-size: 20px;
   position: relative;

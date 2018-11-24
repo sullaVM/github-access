@@ -1,14 +1,24 @@
-$.get("/user", function (result) {
-  console.log(result);
-  var user = [];
-  for (var i = 0; i < result.length; i++) {
-    user[i] = {
-      "name": result[i].login,
-      "r": result[i].public_repos
+
+  $( ".feature" ).on( "click", function( event ) {
+    var username = "/user/sullavm"
+    getUserData(username);
+  });
+
+function getUserData(username) {
+  $.get(username, function (result) {
+    console.log(result);
+    var user = [];
+    for (var i = 0; i < result.length; i++) {
+      user[i] = {
+        "name": result[i].login,
+        "r": result[i].public_repos
+      }
     }
-  }
-  visualise(user);
-});
+    visualise(user);
+  });
+};
+
+
 
 function visualise(gitusers) {
   // D3.js canvasualisation
@@ -108,7 +118,7 @@ function visualise(gitusers) {
   node.append("text")
     .text(function (d) { return d.name; })
     .attr("x", function (d) { return d.r + 5; })
-    .attr("y", function (d) { { return (d.r / 2) - 15;}})
+    .attr("y", function (d) { { return (d.r / 2) - 15; } })
     .attr("fill", palette.text)
     .attr("font-size", "12px")
     .attr("text-anchor", "beginning")
@@ -116,7 +126,7 @@ function visualise(gitusers) {
   node.append("text")
     .text(function (d) { return d.r + " repos"; })
     .attr("x", function (d) { return d.r + 5; })
-    .attr("y", function (d) { { return d.r / 2;} })
+    .attr("y", function (d) { { return d.r / 2; } })
     .attr("fill", palette.text)
     .attr("font-weight", "700")
     .attr("font-size", "14px")
