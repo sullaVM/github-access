@@ -1,10 +1,14 @@
-$('input[type=text]').on('keydown', function(e) {
+$('input[type=text]').on('keydown', function (e) {
   if (e.which == 13) {
-      e.preventDefault();
-      $('input[type=text]').fadeOut("slow");
-      getUserData($("input").val());
+    e.preventDefault();
+    $('input[type=text]').fadeOut("slow");
+    getUserData($("input").val());
+    $('#username').remove();
   }
 });
+
+var w = window.innerWidth,
+  h = window.innerHeight;
 
 function getUserData(username) {
   $.get("/user/" + username, function (result) {
@@ -16,25 +20,43 @@ function getUserData(username) {
         "r": result[i].public_repos
       }
     }
-    visualise(user);
+    visualiseFollowers(user);
   });
 };
 
+function getUserCommitsPerRepo(username) {
+  var url = "/user/" + username + "/commits/all/"
+  $.get(url, function (result) {
+    var repos = [];
+    for (var i = 0; i < result.length; i++) {
+      var totalComs = 0;
+      for (var j = 0; j < result[i].owner.length; j++) {
+        totalComs += result[i].owner[j];
+      }
+      if (totalComs > h / 4) {
+        totalComs = h / 4;
+      }
+      repos[i] = {
+        "name": result[i].repo.name,
+        "url": result[i].repo.url,
+        "language": result[i].language,
+        "r": totalComs
+      }
+    }
+    visualiseRepos(username, repos);
+  });
+}
 
+var palette = {
+  "text": "#823A32",
+  "yellow": "#A57706",
+  "orange": "#BD3613",
+  "followers": "#ED6A5A",
+  "blue": "#2176C7",
+}
 
-function visualise(gitusers) {
-  // D3.js canvasualisation
-  var w = window.innerWidth,
-    h = window.innerHeight;
-
-  var palette = {
-    "text": "#823A32",
-    "yellow": "#A57706",
-    "orange": "#BD3613",
-    "followers": "#ED6A5A",
-    "blue": "#2176C7",
-  }
-
+function visualiseFollowers(gitusers) {
+  // D3.js canvasualisation.
   var nodes = gitusers;
 
   // Create a link for each node from the source user.
@@ -46,20 +68,23 @@ function visualise(gitusers) {
     })
   }
 
-  var canvas = d3.select("body")
+  // Set canvas.
+  var canvas = d3.select("#graph")
     .append("svg:svg")
     .attr("class", "stage")
     .attr("width", w)
     .attr("height", h);
 
-
+  // Set force.
   var force = d3.layout.force()
     .nodes(nodes)
-    .links([])
     .gravity(0.1)
-    .charge(-500)
+    .charge(function (d) {
+      return -500 - d.r;
+    })
     .size([w, h]);
 
+  // Set lines between nodes.
   var link = canvas.selectAll(".link")
     .data(links)
     .enter().append("line")
@@ -67,13 +92,13 @@ function visualise(gitusers) {
     .attr("stroke", "#CCC")
     .attr("fill", "none");
 
+  // Set nodes.
   var node = canvas.selectAll("circle.node")
     .data(nodes)
     .enter().append("g")
     .attr("class", "node")
 
     .on("mouseout", function (d, i) {
-      if (i > 0) {
         d3.select(this).selectAll("circle")
           .transition()
           .duration(250)
@@ -83,11 +108,9 @@ function visualise(gitusers) {
         d3.select(this).select("text")
           .transition()
           .duration(250)
-      }
     })
 
     .on("mouseover", function (d, i) {
-      if (i > 0) {
         d3.select(this).selectAll("circle")
           .transition()
           .duration(250)
@@ -100,13 +123,12 @@ function visualise(gitusers) {
           .style("cursor", "none")
           .duration(250)
           .style("cursor", "none")
-      } else {
-        d3.select(this).selectAll("circle")
-          .style("cursor", "none")
+    })
 
-        d3.select(this).select("text")
-          .style("cursor", "none")
-      }
+
+    .on("click", function (e) {
+      $("#graph").fadeOut("slow").remove();
+      getUserCommitsPerRepo(d3.select(this).select("text").text());
     })
 
     .call(force.drag);
@@ -145,6 +167,57 @@ function visualise(gitusers) {
       .attr("x2", function (d) { return d.target.x; })
       .attr("y2", function (d) { return d.target.y; })
   });
+
+  force.start();
+
+};
+
+function visualiseRepos(owner, repos) {
+  console.log(repos);
+
+  var nodes = repos;
+  // Set canvas.
+  var canvas = d3.select("#stats")
+    .append("svg:svg")
+    .attr("class", "stage")
+    .attr("width", w)
+    .attr("height", h);
+
+  // Set force.
+  var force = d3.layout.force()
+    .nodes(nodes)
+    .gravity(0.1)
+    .charge(function (d) {
+      return -100 - (d.r);
+    })
+    .size([w, h]);
+
+  // Create nodes.
+  var node = canvas.selectAll("circle.node")
+    .data(nodes)
+    .enter().append("g")
+    .attr("class", "node")
+    .call(force.drag);
+
+  node.append("svg:circle")
+    .attr("cx", function (d) { return d.x; })
+    .attr("cy", function (d) { return d.y; })
+    .attr("r", function (d) { return d.r; })
+    .attr("fill", palette.followers)
+
+  force.on("tick", function (e) {
+    node.attr("transform", function (d, i) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
+  });
+
+  node.append("text")
+    .text(function (d) { return d.name + " = " + d.r; })
+    .attr("x", function (d) { return d.r + 5; })
+    .attr("y", function (d) { { return d.r / 2; } })
+    .attr("fill", palette.text)
+    .attr("font-size", "14px")
+    .attr("text-anchor", "beginning")
 
   force.start();
 

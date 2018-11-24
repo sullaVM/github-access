@@ -7,6 +7,36 @@ var client = github.client(process.env.ACCESS_TOKEN);
 
 app.use(express.static("client"));
 
+app.get('/user/:login', function (req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  console.log(req.params.login);
+  getUserFollowers(req.params.login)
+    .then(data => getUsersPoints(req.params.login, data))
+    .then(users => res.json(users))
+    .catch(error => console.log(error));
+});
+
+app.get('/user/:login/repos', function (req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  console.log(req.params.login);
+  getUserRepos(req.params.login)
+    .then(data => {
+      console.log(data);
+      res.json(data)
+    })
+    .catch(error => console.log(error));
+});
+
+
+app.get('/user/:login/commits/all', function (req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  console.log(req.params.login);
+  getUserRepos(req.params.login)
+    .then(data => getAllRepoCommits(data))
+    .then(data => res.json(data))
+    .catch(error => console.log(error));
+});
+
 function getUserInfo(login) {
   return new Promise((resolve, reject) => {
     client.get(`/users/${login}`, {}, function (err, status, body, headers) {
@@ -14,7 +44,7 @@ function getUserInfo(login) {
       else resolve(body)
     });
   });
-};
+}
 
 function getUserFollowers(login) {
   return new Promise((resolve, reject) => {
@@ -23,16 +53,15 @@ function getUserFollowers(login) {
       else resolve(body)
     });
   });
-};
+}
 
-function getUserRepos(url) {
+function getUserRepos(user) {
   return new Promise((resolve, reject) => {
-    client.get(url, {}, function (err, status, body, headers) {
+    client.get(`/users/${user}/repos`, {}, function (err, status, body, headers) {
       if (err) reject(err);
       return resolve(body);
     });
-  }
-  )
+  });
 }
 
 async function getUsersPoints(login, users) {
@@ -43,25 +72,39 @@ async function getUsersPoints(login, users) {
 
   // Get the user infos for the followers of the current user.
   users.forEach(element => {
-    promises.push(getUserRepos(`/users/${element.login}`)
+    promises.push(getUserInfo(element.login)
       .catch(error => console.log(error)));
   });
   const resolvedfinalArray = await Promise.all(promises)
     .catch(error => console.log(error));
-  console.log(resolvedfinalArray);
-  return resolvedfinalArray;
 
+  return resolvedfinalArray;
 }
 
-app.get('/user/:login', function (req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  console.log(req.params.login);
-  getUserFollowers(req.params.login)
-    .then(data => getUsersPoints(req.params.login, data)
-    .then(users => res.json(users)))
+function getRepoCommits(repo) {
+  return new Promise((resolve, reject) => {
+    client.get(`/repos/${repo.full_name}/stats/participation`, {}, function (err, status, body, headers) {
+      if (err) reject(err);
+      body['repo'] = repo;
+      return resolve(body);
+    })
+  });
+}
+
+async function getAllRepoCommits(repos) {
+  console.log(repos);
+  var promises = [];
+
+  repos.forEach(element => {
+    promises.push(getRepoCommits(element)
+      .catch(error => console.log(error)));
+  });
+  const resolvedfinalArray = await Promise.all(promises)
     .catch(error => console.log(error));
-})
+
+  return resolvedfinalArray;
+}
 
 app.listen(8080, function () {
   console.log('Web server listening on port 8080')
-})
+});

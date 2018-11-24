@@ -4,6 +4,7 @@
   --platinum: #E6EBE0;
   --teracotta: #ED6A5A;
   --solidpink: #823A32;
+  --rackley: #568EA3;
 }
 
 body {
@@ -48,7 +49,7 @@ body {
   font-weight: 700;
   font-size: 20px;
   position: relative;
-  background-color: var(--teracotta);
+  background-color: var(--rackley);
   color: white;
   padding: 10px;
 }
