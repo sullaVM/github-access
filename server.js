@@ -21,12 +21,10 @@ app.get('/user/:login/repos', function (req, res) {
   console.log(req.params.login);
   getUserRepos(req.params.login)
     .then(data => {
-      console.log(data);
       res.json(data)
     })
     .catch(error => console.log(error));
 });
-
 
 app.get('/user/:login/commits/all', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
