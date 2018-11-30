@@ -1,0 +1,20 @@
+{
+  "name": "git_compare",
+  "version": "1.0.0",
+  "description": "Git Compare is a Github Social Graph for Software Engineering project module.",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sullaVM/swe-social-graph.git"
+  },
+  "author": "Sulla Montes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sullaVM/swe-social-graph/issues"
+  },
+  "homepage": "https://github.com/sullaVM/swe-social-graph#readme"
+}
