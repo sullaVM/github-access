@@ -108,7 +108,13 @@ function visualiseFollowers(gitusers) {
 			d3.select(this).selectAll('circle')
 				.transition()
 				.duration(250)
-				.attr('r', d.r)
+				.attr('r', function (d) {
+					if ((d.r * 2) > (h / 4)) {
+						return (h / 4);
+					} else {
+						return d.r;
+					}
+				})
 				.attr('fill', palette.followers);
 
 			d3.select(this).select('text')
@@ -121,7 +127,13 @@ function visualiseFollowers(gitusers) {
 				.transition()
 				.duration(250)
 				.style('cursor', 'none')
-				.attr('r', d.r + 3)
+				.attr('r', function (d) {
+					if ((d.r * 2) > (h / 4)) {
+						return (h / 4);
+					} else {
+						return d.r;
+					}
+				})
 				.attr('fill', palette.orange)
 				.style('cursor', 'pointer');
 
@@ -144,8 +156,10 @@ function visualiseFollowers(gitusers) {
 		.attr('cx', function (d) { return d.x; })
 		.attr('cy', function (d) { return d.y; })
 		.attr('r', function (d) {
-			if (d.r > w) {
-				return d.r - (w + (w / 2));
+			// Do not scale to screen if node is bigger than screen.
+			// Give a fixed length for these nodes.
+			if ((d.r * 2) > (h / 4)) {
+				return h / 4;
 			} else {
 				return d.r;
 			}
@@ -216,13 +230,22 @@ function userSummary(owner, repos) {
 
 }
 
+function findMaxRepo(weeks) {
+	var max = weeks[0].c;
+	for (var i = 0; i < weeks.length; i++) {
+		if (weeks[i].c > max) {
+			max = weeks[i].c;
+		}
+	}
+	return max;
+}
+
 function repoData(repo) {
 	// Check if repo has not had any commits the past year.
 	if (repo.length < 0 || jQuery.isEmptyObject(repo)) {
 		$('#graphHolder').append('<p>Repository has no commits the past year.</p>')
 
 	} else {
-
 		var m = [80, 80, 80, 80];
 		var w = $('#userSummary').width() - m[1] - m[3];
 		var h = 300 - m[0] - m[2];
@@ -230,7 +253,7 @@ function repoData(repo) {
 		var data = repo.weeks;
 
 		var x = d3.scale.linear().domain([0, data.length]).range([0, w]);
-		var y = d3.scale.linear().domain([0, 10]).range([h, 0]);
+		var y = d3.scale.linear().domain([0, findMaxRepo(repo.weeks)]).range([h, 0]);
 
 		var line = d3.svg.line()
 			.x(function (d, i) {

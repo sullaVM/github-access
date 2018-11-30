@@ -12,8 +12,8 @@ app.get('/user/:login', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   console.log(req.params.login);
   getUserFollowers(req.params.login)
-    .then(data => getUsersPoints(req.params.login, data))
-    .then(users => res.json(users))
+    .then(data => getUsersPoints(req.params.login, data)
+    .then(users => res.json(users)))
     .catch(error => console.log(error));
 });
 
