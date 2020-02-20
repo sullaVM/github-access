@@ -1,9 +1,6 @@
 # Git Compare (Github Social Graph)
 Social Graph Project for **TCD CS Module: Software Engineering**
 
-## Live
-http://swe.sullamontes.com
-
 ## Assignment Specifications
 Interrogate the GitHub API to build visualisation of data available tht elucidates some aspect of the softare engineering process, such as a social graph of developers and projects, or a visualisation of indiviudal or team performance. Provide a visualisation of this using the d3js library.
 
